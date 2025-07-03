@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Advanced Quiz App</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 40px; background: #f4f4f4; }
+    .quiz-box { max-width: 600px; margin: auto; padding: 30px; background: white; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    .question { font-size: 20px; margin-bottom: 15px; }
+    .options label { display: block; margin: 8px 0; cursor: pointer; }
+    .feedback { margin-top: 15px; font-weight: bold; }
+    .next-btn, .restart-btn { margin-top: 25px; padding: 10px 20px; font-size: 16px; cursor: pointer; }
+    .score { font-size: 18px; color: #333; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <div class="quiz-box">
+    <div id="score" class="score"></div>
+    <div id="question" class="question"></div>
+    <div id="options" class="options"></div>
+    <div id="feedback" class="feedback"></div>
+    <button onclick="nextQuestion()" class="next-btn" id="nextBtn">Next Question</button>
+    <button onclick="restartQuiz()" class="restart-btn" id="restartBtn" style="display:none;">Restart Quiz</button>
+  </div>
+
+  <script>
+    const quiz = [
+      {
+        question: "What is the capital of France?",
+        options: ["Berlin", "Madrid", "Paris", "Rome"],
+        answer: 2
+      },
+      {
+        question: "Which planet is known as the Red Planet?",
+        options: ["Earth", "Mars", "Jupiter", "Saturn"],
+        answer: 1
+      },
+      {
+        question: "Who wrote 'To Kill a Mockingbird'?",
+        options: ["Harper Lee", "Jane Austen", "Mark Twain", "Ernest Hemingway"],
+        answer: 0
+      },
+      {
+        question: "Which language is primarily used for web apps?",
+        options: ["Python", "C++", "JavaScript", "Java"],
+        answer: 2
+      },
+      {
+        question: "What is the square root of 144?",
+        options: ["10", "12", "14", "16"],
+        answer: 1
+      }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+    let answered = false;
+
+    function loadQuestion() {
+      const q = quiz[currentQuestion];
+      document.getElementById("question").innerText = `Q${currentQuestion + 1}: ${q.question}`;
+      const optionsDiv = document.getElementById("options");
+      optionsDiv.innerHTML = "";
+      q.options.forEach((option, index) => {
+        optionsDiv.innerHTML += `<label><input type='radio' name='option' value='${index}' onclick='checkAnswer(${index})'> ${option}</label>`;
+      });
+      document.getElementById("feedback").innerText = "";
+      document.getElementById("score").innerText = `Score: ${score}/${quiz.length}`;
+      answered = false;
+    }
+
+    function checkAnswer(selected) {
+      if (answered) return;
+      answered = true;
+      const correct = quiz[currentQuestion].answer;
+      const feedback = document.getElementById("feedback");
+      if (selected === correct) {
+        feedback.innerText = "Correct!";
+        feedback.style.color = "green";
+        score++;
+      } else {
+        feedback.innerText = `Incorrect. Correct answer: ${quiz[currentQuestion].options[correct]}`;
+        feedback.style.color = "red";
+      }
+      document.getElementById("score").innerText = `Score: ${score}/${quiz.length}`;
+    }
+
+    function nextQuestion() {
+      if (!answered) {
+        alert("Please select an answer before moving to the next question.");
+        return;
+      }
+      currentQuestion++;
+      if (currentQuestion < quiz.length) {
+        loadQuestion();
+      } else {
+        document.querySelector(".quiz-box").innerHTML = `<h2>Quiz Completed!</h2><p>Your final score is ${score}/${quiz.length}.</p><button onclick='restartQuiz()' class='restart-btn'>Restart Quiz</button>`;
+      }
+    }
+
+    function restartQuiz() {
+      currentQuestion = 0;
+      score = 0;
+      document.getElementById("restartBtn").style.display = "none";
+      document.getElementById("nextBtn").style.display = "inline-block";
+      loadQuestion();
+    }
+
+    loadQuestion();
+  </script>
+</body>
+</html>
